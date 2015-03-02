@@ -5,6 +5,7 @@ nodes = {
     'galera1'   => [1, 191],
     'galera2'   => [1, 192],
     'galera3'   => [1, 193],
+    'haproxy'   => [1, 251],
 }
 
 Vagrant.configure("2") do |config|
@@ -73,14 +74,14 @@ Vagrant.configure("2") do |config|
         # If using Fusion or Workstation
         box.vm.provider :vmware_fusion or box.vm.provider :vmware_workstation do |v|
           v.vmx["memsize"] = 2048
-          v.vmx["numvcpus"] = "2"
+          v.vmx["numvcpus"] = "1"
         end
 
         # Otherwise using VirtualBox
         box.vm.provider :virtualbox do |vbox|
           # Defaults
-          vbox.customize ["modifyvm", :id, "--memory", 2048]
-          vbox.customize ["modifyvm", :id, "--cpus", 2]
+          vbox.customize ["modifyvm", :id, "--memory", 1536]
+          vbox.customize ["modifyvm", :id, "--cpus", 1]
         end
       end
     end
