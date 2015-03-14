@@ -5,7 +5,7 @@ nodes = {
     'galera1'   => [1, 191],
     'galera2'   => [1, 192],
     'galera3'   => [1, 193],
-    'haproxy'   => [1, 251],
+    'haproxy'   => [2, 248],
 }
 
 Vagrant.configure("2") do |config|
@@ -52,7 +52,7 @@ Vagrant.configure("2") do |config|
 
   nodes.each do |prefix, (count, ip_start)|
     count.times do |i|
-      if prefix == "compute"
+      if prefix == "compute" or prefix == "haproxy"
         hostname = "%s-%02d" % [prefix, (i+1)]
       else
         hostname = "%s" % [prefix, (i+1)]

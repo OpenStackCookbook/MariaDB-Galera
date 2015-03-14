@@ -59,6 +59,36 @@ EOF
 sudo sed -i 's/^ENABLED.*/ENABLED=1/' /etc/default/haproxy
 sudo service haproxy start
 
+# Keepalived
+sudo apt-get -y install keepalived
+
+echo "net.ipv4.ip_nonlocal_bind=1" >> /etc/sysctl.conf
+sysctl -p
+
+cat > /etc/keepalived/keepalived.conf <<EOF
+vrrp_script chk_haproxy {
+  script "killall -0 haproxy" # verify the pid exists or
+    not
+  interval 2        # check every 2 seconds
+  weight 2          # add 2 points if OK
+}
+
+vrrp_instance VI_1 {
+  interface eth1    # interface to monitor
+  state MASTER
+  virtual_router_id 51  # Assign one ID for this route
+  priority 101      # 101 on master, 100 on backup
+  virtual_ipaddress {
+    172.16.0.251   # the virtual IP
+  }
+  track_script {
+    chk_haproxy
+  }
+}
+EOF
+
+sudo service keepalived start
+
 cat /vagrant/id_rsa.pub | sudo tee -a /root/.ssh/authorized_keys
 sudo cp /vagrant/id_rsa /root/.ssh/id_rsa
 chmod 0600 /root/.ssh/id_rsa
